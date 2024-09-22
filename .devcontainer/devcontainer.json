@@ -1,0 +1,73 @@
+// See https://containers.dev for development containers docs
+{
+  "name": "youchoose",
+  "dockerComposeFile": [
+		"./docker-compose.yml"
+	],
+  // The service in the compose file to connect to once running
+  "service": "devcontainer",
+  "workspaceFolder": "/app",
+  // Stop all containers if we close/ reload VSCode window
+  "shutdownAction": "stopCompose",
+  // The command to run immedietly after container creation
+  "postCreateCommand": "go version",
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+  "customizations": {
+    // Configure properties specific to VS Code
+    "vscode": {
+      // Set *default* container specific settings.json values on container creation
+      "settings": {
+        "[sql]": {
+					"editor.formatOnSave": true
+				},
+        "pgFormatter.pgFormatterPath": "/usr/local/bin/pg_format",
+        "go.useLanguageServer": true,
+        "[go]": {
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+          },
+          // Optional: Disable snippets, as they conflict with completion ranking.
+          "editor.snippetSuggestions": "none"
+        },
+        "[go.mod]": {
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+          }
+        },
+        "gopls": {
+          "usePlaceholders": true,
+          "staticcheck": false
+        },
+        "go.autocompleteUnimportedPackages": true,
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": [
+          "--fast",
+          "--timeout",
+          "5m"
+        ],
+        "go.testFlags": [
+					"-cover",
+					"-race",
+					"-count=1",
+					"-v"
+				],
+        "go.delveConfig": {
+          "dlvLoadConfig": {
+            // increase max length of strings displayed in debugger
+            "maxStringLen": 2048
+          },
+          "apiVersion": 2
+        }
+      },
+      "extensions": [
+        "golang.go",
+        "bradymholt.pgformatter",
+        "eamodio.gitlens",
+        "yzhang.markdown-all-in-one"
+      ]
+    }
+  }
+}
