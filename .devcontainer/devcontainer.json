@@ -11,6 +11,9 @@
   "shutdownAction": "stopCompose",
   // The command to run immedietly after container creation
   "postCreateCommand": "go version",
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached"
+  ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
   "customizations": {
