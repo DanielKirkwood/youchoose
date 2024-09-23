@@ -7,7 +7,7 @@ if [ "$1" = "--up" ]; then
 fi
 
 if [ "$1" = "--halt" ]; then
-    docker compose stop
+    docker compose -f ./.devcontainer/docker-compose.yml stop
 fi
 
 if [ "$1" = "--rebuild" ]; then
