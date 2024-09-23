@@ -18,11 +18,6 @@ services:
       # mount cached go pkg downloads
       - go-pkg:/go/pkg
 
-      # speed up tmp dirs in working directory by using separate volumes (not the host's filesystem)
-      - workdir-api-tmp:/app/api/tmp
-      - workdir-bin:/app/bin
-      - workdir-tmp:/app/tmp
-
       # mount cached vscode container extensions
       # https://code.visualstudio.com/docs/remote/containers-advanced#_avoiding-extension-reinstalls-on-container-rebuild
       - vscode-extensions:/home/development/.vscode-server/extensions
@@ -45,15 +40,6 @@ services:
       PGPORT: &PGPORT "5432"
       PGSSLMODE: &PGSSLMODE "disable"
 
-      # optional: env for sql-boiler (ability to generate models out of a "spec" database)
-      # sql-boiler should operate on a "spec" database only
-      PSQL_DBNAME: "spec"
-      PSQL_USER: *PGUSER
-      PSQL_PASS: *PGPASSWORD
-      PSQL_HOST: *PGHOST
-      PSQL_PORT: *PGPORT
-      PSQL_SSLMODE: *PGSSLMODE
-
       # optional: project root directory, used for relative path resolution (e.g. fixtures)
       PROJECT_ROOT_DIR: *PROJECT_ROOT_DIR
 
@@ -67,16 +53,7 @@ services:
       - seccomp:unconfined
 
     # Overrides default command so things don't shut down after the process ends.
-    command:
-      - /bin/sh
-      - -c
-      - |
-        sudo chown -R development:development /app/api/tmp
-        sudo chown -R development:development /app/bin
-        sudo chown -R development:development /app/tmp
-        chmod +x /app/rksh
-        git config --global --add safe.directory /app
-        while sleep 1000; do :; done
+    command: sleep infinity
 
   postgres:
     image: postgres:16-alpine # should be the same version as used in .drone.yml, .github/workflows, Dockerfile and live
