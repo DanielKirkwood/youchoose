@@ -1,9 +1,11 @@
 -- name: SearchRestaurants :many
-select id, name, address_line1, address_line2, postcode, ts_rank(search_vector, websearch_to_tsquery(@s::text)) as rank
+select id, name, address_line1, address_line2, postcode, ts_rank(search_vector, websearch_to_tsquery(@search_term::text)) as rank
 from restaurants
-where search_vector @@ websearch_to_tsquery(@s::text)
+where search_vector @@ websearch_to_tsquery('english', @search_term::text)
 and valid = true
-order by rank desc;
+order by rank desc
+limit $1 offset $2;
+
 
 -- name: GetNearestRestaurants :many
 with user_location as (

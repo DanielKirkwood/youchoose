@@ -92,12 +92,19 @@ func (q *Queries) GetNearestRestaurants(ctx context.Context, arg GetNearestResta
 }
 
 const searchRestaurants = `-- name: SearchRestaurants :many
-select id, name, address_line1, address_line2, postcode, ts_rank(search_vector, websearch_to_tsquery($1::text)) as rank
+select id, name, address_line1, address_line2, postcode, ts_rank(search_vector, websearch_to_tsquery($3::text)) as rank
 from restaurants
-where search_vector @@ websearch_to_tsquery($1::text)
+where search_vector @@ websearch_to_tsquery('english', $3::text)
 and valid = true
 order by rank desc
+limit $1 offset $2
 `
+
+type SearchRestaurantsParams struct {
+	Limit      int32  `json:"limit"`
+	Offset     int32  `json:"offset"`
+	SearchTerm string `json:"search_term"`
+}
 
 type SearchRestaurantsRow struct {
 	ID           uuid.UUID   `json:"id"`
@@ -108,8 +115,8 @@ type SearchRestaurantsRow struct {
 	Rank         float32     `json:"rank"`
 }
 
-func (q *Queries) SearchRestaurants(ctx context.Context, s string) ([]SearchRestaurantsRow, error) {
-	rows, err := q.db.Query(ctx, searchRestaurants, s)
+func (q *Queries) SearchRestaurants(ctx context.Context, arg SearchRestaurantsParams) ([]SearchRestaurantsRow, error) {
+	rows, err := q.db.Query(ctx, searchRestaurants, arg.Limit, arg.Offset, arg.SearchTerm)
 	if err != nil {
 		return nil, err
 	}

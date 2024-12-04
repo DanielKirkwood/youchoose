@@ -11,7 +11,7 @@ import (
 type Querier interface {
 	CreateFHRSRawData(ctx context.Context, arg []CreateFHRSRawDataParams) *CreateFHRSRawDataBatchResults
 	GetNearestRestaurants(ctx context.Context, arg GetNearestRestaurantsParams) ([]GetNearestRestaurantsRow, error)
-	SearchRestaurants(ctx context.Context, s string) ([]SearchRestaurantsRow, error)
+	SearchRestaurants(ctx context.Context, arg SearchRestaurantsParams) ([]SearchRestaurantsRow, error)
 }
 
 var _ Querier = (*Queries)(nil)
