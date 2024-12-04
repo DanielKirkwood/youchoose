@@ -2,10 +2,7 @@
 create extension if not exists postgis;
 
 -- add the geospatial columns for latitude and longitude in the restaurants table
-alter table restaurants add column geolocation geography(point, 4326);
-
--- update the table with geolocation data from latitude and longitude
-update restaurants set geolocation = st_setsrid(st_makepoint(longitude, latitude), 4326);
+alter table restaurants add column geolocation geography(point, 4326) generated always as (st_setsrid(st_makepoint(longitude, latitude), 4326)) stored;
 
 -- create a gist index on the geolocation column for fast location-based queries
 create index restaurants_geolocation_idx on restaurants using gist (geolocation);

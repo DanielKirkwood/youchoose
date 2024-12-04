@@ -3,11 +3,11 @@
 {
   # https://devenv.sh/basics/
   dotenv.enable = true;
-  env.TERN_CONFIG = "/Users/daniel/github.com/DanielKirkwood/youchoose/backend/migrations/tern.conf";
-  env.TERN_MIGRATIONS = "/Users/daniel/github.com/DanielKirkwood/youchoose/backend/migrations/";
+  env.TERN_CONFIG = "/Users/daniel/github.com/DanielKirkwood/youchoose/backend/database/tern.conf";
+  env.TERN_MIGRATIONS = "/Users/daniel/github.com/DanielKirkwood/youchoose/backend/database/migrations/";
 
   # https://devenv.sh/packages/
-  packages = [ pkgs.git ];
+  packages = [ pkgs.git pkgs.sqlc ];
 
   # https://devenv.sh/languages/
   languages.go.enable = true;
