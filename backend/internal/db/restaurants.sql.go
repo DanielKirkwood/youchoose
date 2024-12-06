@@ -14,10 +14,12 @@ import (
 
 const getNearestRestaurants = `-- name: GetNearestRestaurants :many
 with user_location as (
-    select st_setsrid(st_makepoint($4::float, $5::float), 4326) as location
+    select st_setsrid(
+            st_makepoint($5::float, $6::float),
+            4326
+        ) as location
 )
-select
-    r.id,
+select r.id,
     r.name,
     r.address_line1,
     r.address_line2,
@@ -25,24 +27,28 @@ select
     r.longitude,
     r.latitude,
     st_distance(ul.location, r.geolocation) as distance_meters
-from
-    restaurants r,
+from restaurants r,
     user_location ul
-where
-    r.geolocation is not null
+where r.geolocation is not null
     and st_dwithin(ul.location, r.geolocation, $3::float)
-    and valid = true
-order by
-    distance_meters asc
+    and (
+        (
+            r.valid = true
+            and r.created_by is null
+        )
+        or r.created_by = $4::uuid
+    )
+order by distance_meters asc
 limit $1 offset $2
 `
 
 type GetNearestRestaurantsParams struct {
-	Limit         int32   `json:"limit"`
-	Offset        int32   `json:"offset"`
-	MaxRadius     float64 `json:"max_radius"`
-	UserLongitude float64 `json:"user_longitude"`
-	UserLatitude  float64 `json:"user_latitude"`
+	Limit         int32     `json:"limit"`
+	Offset        int32     `json:"offset"`
+	MaxRadius     float64   `json:"max_radius"`
+	UserID        uuid.UUID `json:"user_id"`
+	UserLongitude float64   `json:"user_longitude"`
+	UserLatitude  float64   `json:"user_latitude"`
 }
 
 type GetNearestRestaurantsRow struct {
@@ -61,6 +67,7 @@ func (q *Queries) GetNearestRestaurants(ctx context.Context, arg GetNearestResta
 		arg.Limit,
 		arg.Offset,
 		arg.MaxRadius,
+		arg.UserID,
 		arg.UserLongitude,
 		arg.UserLatitude,
 	)
@@ -92,18 +99,33 @@ func (q *Queries) GetNearestRestaurants(ctx context.Context, arg GetNearestResta
 }
 
 const searchRestaurants = `-- name: SearchRestaurants :many
-select id, name, address_line1, address_line2, postcode, ts_rank(search_vector, websearch_to_tsquery($3::text)) as rank
+select id,
+    name,
+    address_line1,
+    address_line2,
+    postcode,
+    ts_rank(
+        search_vector,
+        websearch_to_tsquery($3::text)
+    ) as rank
 from restaurants
 where search_vector @@ websearch_to_tsquery('english', $3::text)
-and valid = true
+    and (
+        (
+            r.valid = true
+            and r.created_by is null
+        )
+        or r.created_by = $4::uuid
+    )
 order by rank desc
 limit $1 offset $2
 `
 
 type SearchRestaurantsParams struct {
-	Limit      int32  `json:"limit"`
-	Offset     int32  `json:"offset"`
-	SearchTerm string `json:"search_term"`
+	Limit      int32     `json:"limit"`
+	Offset     int32     `json:"offset"`
+	SearchTerm string    `json:"search_term"`
+	UserID     uuid.UUID `json:"user_id"`
 }
 
 type SearchRestaurantsRow struct {
@@ -116,7 +138,12 @@ type SearchRestaurantsRow struct {
 }
 
 func (q *Queries) SearchRestaurants(ctx context.Context, arg SearchRestaurantsParams) ([]SearchRestaurantsRow, error) {
-	rows, err := q.db.Query(ctx, searchRestaurants, arg.Limit, arg.Offset, arg.SearchTerm)
+	rows, err := q.db.Query(ctx, searchRestaurants,
+		arg.Limit,
+		arg.Offset,
+		arg.SearchTerm,
+		arg.UserID,
+	)
 	if err != nil {
 		return nil, err
 	}

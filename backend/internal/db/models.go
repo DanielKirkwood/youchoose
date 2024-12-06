@@ -51,4 +51,13 @@ type Restaurant struct {
 	Updated      pgtype.Timestamptz `json:"updated"`
 	SearchVector interface{}        `json:"search_vector"`
 	Geolocation  interface{}        `json:"geolocation"`
+	CreatedBy    pgtype.UUID        `json:"created_by"`
+}
+
+type User struct {
+	ID          uuid.UUID          `json:"id"`
+	DisplayName string             `json:"display_name"`
+	Email       pgtype.Text        `json:"email"`
+	Created     pgtype.Timestamptz `json:"created"`
+	Updated     pgtype.Timestamptz `json:"updated"`
 }
