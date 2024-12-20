@@ -7,6 +7,7 @@ FROM mcr.microsoft.com/devcontainers/go:1-1.23-bookworm
 # [Optional] Uncomment the next lines to use go get to install anything else you need
 USER vscode
 RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+RUN go install github.com/jackc/tern/v2@latest
 USER root
 
 # [Optional] Uncomment this line to install global node packages.

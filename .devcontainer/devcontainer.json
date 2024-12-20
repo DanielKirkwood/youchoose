@@ -12,6 +12,20 @@
 			"pnpmVersion": "latest",
 			"nvmVersion": "latest"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"mtxr.sqltools",
+				"mtxr.sqltools-driver-pg",
+				"redhat.vscode-yaml",
+				"golang.go",
+				"codezombiech.gitignore",
+				"GitHub.vscode-pull-request-github",
+				"tamasfe.even-better-toml",
+				"mikestead.dotenv"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
