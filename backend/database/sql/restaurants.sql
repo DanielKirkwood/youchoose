@@ -12,10 +12,10 @@ from restaurants
 where search_vector @@ websearch_to_tsquery('english', @search_term::text)
     and (
         (
-            r.valid = true
-            and r.created_by is null
+            valid = true
+            and created_by is null
         )
-        or r.created_by = @user_id::uuid
+        or created_by = @user_id::uuid
     )
 order by rank desc
 limit $1 offset $2;
