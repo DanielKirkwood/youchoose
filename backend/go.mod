@@ -1,9 +1,9 @@
 module github.com/DanielKirkwood/youchoose
 
-go 1.22.1
+go 1.23.4
 
 require (
-	github.com/danielgtaylor/huma/v2 v2.26.0
+	github.com/danielgtaylor/huma/v2 v2.27.0
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/jackc/pgx/v5 v5.7.1
 )
@@ -15,7 +15,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/crypto v0.28.0 // indirect
-	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 )
